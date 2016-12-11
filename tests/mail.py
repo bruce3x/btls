@@ -4,7 +4,23 @@ import tempfile
 import unittest
 
 import os
-from btls.mail import render_template
+from btls.mail import render_template, send_mail
+
+
+def load_env(auto=True):
+    if os.path.exists('.env'):
+        print('Importing environment from .env...')
+        env_dict = {}
+        with open('.env') as fp:
+            for line in fp.readlines():
+                var = line.strip().split('=')
+                if len(var) == 2:
+                    env_dict[var[0]] = var[1]
+
+        if auto:
+            os.environ.update(env_dict)
+
+        return env_dict
 
 
 class TestMail(unittest.TestCase):
@@ -32,6 +48,11 @@ class TestMail(unittest.TestCase):
         output = render_template(self.temp_file, title='Hello', body='Test')
 
         self.assertEqual(output, self.expected)
+
+    def test_send_mail(self):
+        load_env()
+        to = os.environ.get('TEST_MAIL_TO')
+        send_mail(to, 'mail from unittest', 'hello btls')
 
 
 if __name__ == '__main__':

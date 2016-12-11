@@ -3,20 +3,18 @@ import os
 
 import yagmail
 
-SINA_HOST = 'smtp.sina.com'
 
-
-def send(to, subject, content, attachments=None,
-         username=None, password=None, host=None, port='587'):
+def send_mail(to, subject, content, attachments=None,
+              username=None, password=None, host=None, port='587'):
     """
     发送邮件
     :param to:              邮件接收者, 支持列表、字典
     :param subject:         邮件主题
     :param content:         邮件正文
     :param attachments:     邮件附件的路径, 列表
-    :param username:        发件者邮箱(默认从环境变量 MAIL_USERNAME 中获取取)
-    :param password:        发件者密码(默认从环境变量 MAIL_PASSWORD 中获取取)
-    :param host:            发件者服务器地址(默认 gmail)
+    :param username:        发件者邮箱(默认从环境变量 MAIL_USERNAME 中获取)
+    :param password:        发件者密码(默认从环境变量 MAIL_PASSWORD 中获取)
+    :param host:            发件者服务器地址(默认从环境变量 MAIL_HOST 中获取)
     :param port:            发件者服务器端口(默认 587)
     :return:
     """
@@ -25,6 +23,12 @@ def send(to, subject, content, attachments=None,
 
     if not password:
         password = os.environ.get('MAIL_PASSWORD')
+
+    if not host:
+        host = os.environ.get('MAIL_HOST')
+
+    if not (username and password and host):
+        raise AttributeError('Username/Password/Host is necessary to send mail.')
 
     with yagmail.SMTP(user=username, password=password, host=host, port=port) as yag:
         yag.send(to=to, subject=subject, contents=content, attachments=attachments)

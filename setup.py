@@ -8,7 +8,7 @@ def readme():
 
 
 setup(name='btls',
-      version='0.0.1',
+      version='0.0.2',
       description='brucezz\'s toolbox',
       long_description=readme(),
       keywords='python tools',
